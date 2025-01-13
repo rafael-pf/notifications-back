@@ -6,11 +6,27 @@ class NotificationController {
     try {
       const { token, title, body } = req.body;
 
-      await NotificationService.sendNotification(token, title, body);
+      const notificationSent = await NotificationService.sendNotification(
+        token,
+        title,
+        body,
+      );
 
-      res.status(200).json({ message: 'Notification sent successfully' });
+      if (!notificationSent) {
+        return next({
+          status: 500,
+          message: 'Error sending notification',
+        });
+      }
+
+      res.locals = {
+        status: 200,
+        message: 'Notification sent successfully',
+      };
+
+      return next();
     } catch (error) {
-      res.status(500).json({ message: 'Error sending notification' });
+      return next(error);
     }
   }
 }
