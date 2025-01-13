@@ -6,13 +6,13 @@ const serviceAccount = {
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
 };
 
-admin.initializeApp({
+const app = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
 class NotificationService {
   async sendNotification(token: string, title: string, body: string) {
-    const messaging = admin.messaging();
+    const messaging = admin.messaging(app);
 
     try {
       await messaging.send({
@@ -24,8 +24,10 @@ class NotificationService {
       });
 
       console.log('Notification sent successfully');
+      return true;
     } catch (error) {
       console.error('Error sending notification:', error);
+      return false;
     }
   }
 }
